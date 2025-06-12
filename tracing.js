@@ -36,36 +36,23 @@ function resizeCanvas() {
 function drawPhrase() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const fontSize = canvas.height / 10; // large and responsive
+  const words = currentPhrase.split(" ");
+  const lineCount = words.length;
+
+  // Dynamically set a font size that fits the canvas height
+  const maxLineHeight = canvas.height / (lineCount + 1); // leave room for spacing
+  const fontSize = Math.floor(maxLineHeight * 0.8); // 80% of line height
   ctx.font = `bold ${fontSize}px Arial`;
   ctx.strokeStyle = "lightgray";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
 
-  const words = currentPhrase.split(" ");
-  const lines = [];
-  let currentLine = words[0];
-
-  for (let i = 1; i < words.length; i++) {
-    const word = words[i];
-    const testLine = currentLine + " " + word;
-    const testWidth = ctx.measureText(testLine).width;
-
-    if (testWidth < canvas.width * 0.9) {
-      currentLine = testLine;
-    } else {
-      lines.push(currentLine);
-      currentLine = word;
-    }
-  }
-  lines.push(currentLine);
-
-  const lineHeight = fontSize * 1.3;
-  const totalHeight = lines.length * lineHeight;
+  const totalHeight = fontSize * lineCount + fontSize * 0.2 * (lineCount - 1); // Add space between lines
   const startY = (canvas.height - totalHeight) / 2;
 
-  lines.forEach((line, index) => {
-    ctx.strokeText(line, canvas.width / 2, startY + index * lineHeight);
+  words.forEach((word, index) => {
+    const y = startY + index * fontSize * 1.2;
+    ctx.strokeText(word, canvas.width / 2, y);
   });
 }
 
