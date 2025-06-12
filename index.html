@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Letter Tracing Game</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        text-align: center;
+        margin: 20px;
+      }
+
+      canvas {
+        border: 2px solid #000;
+        touch-action: none;
+        display: block;
+        margin: 0 auto;
+      }
+
+      button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+
+      #feedback {
+        margin-top: 10px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Trace the Letter</h2>
+
+    <canvas id="tracingCanvas" width="600" height="400"></canvas>
+
+    <div>
+      <button onclick="resetCanvas()">Reset</button>
+    </div>
+
+    <div id="feedback"></div>
+
+    <!-- Always include scripts at the end of body for best loading performance -->
+    <script src="tracing.js"></script>
+  </body>
+</html>
