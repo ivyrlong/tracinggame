@@ -1,9 +1,9 @@
 const canvas = document.getElementById("tracingCanvas");
+const wrapper = document.getElementById("canvasWrapper");
 const ctx = canvas.getContext("2d");
 let isDrawing = false;
 let lastX, lastY;
 
-// Daily phrases to trace
 const phrases = [
   "If sinners try to entice you, do not consent.-- Proverbs 1:10",
   "Stop being afraid.--Luke 5:10",
@@ -18,51 +18,45 @@ const phrases = [
 ];
 let currentPhrase = phrases[new Date().getDate() % phrases.length];
 
-// Resize canvas to match visible area
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+  const visibleHeight = wrapper.clientHeight;
+  const words = currentPhrase.split(" ");
+  const lineHeight = visibleHeight / 6;
+  const estimatedHeight = words.length * lineHeight * 1.5;
 
-  // Set internal drawing size to match actual rendered size (important!)
-  canvas.width = rect.width;
-  canvas.height = rect.height;
+  canvas.width = wrapper.clientWidth;
+  canvas.height = estimatedHeight;
 
-  ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset any transforms (just in case)
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  drawPhrase(); // Redraw after resize
+  drawPhrase();
 }
 
-// Draw phrase on canvas
 function drawPhrase() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const words = currentPhrase.split(" ");
-  const lineCount = words.length;
+  const lineHeight = canvas.height / (words.length + 1);
+  const fontSize = lineHeight * 0.8;
 
-  // Dynamically set a font size that fits the canvas height
-  const maxLineHeight = canvas.height / (lineCount + 1); // leave room for spacing
-  const fontSize = Math.floor(maxLineHeight * 0.8); // 80% of line height
   ctx.font = `bold ${fontSize}px Arial`;
   ctx.strokeStyle = "lightgray";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
 
-  const totalHeight = fontSize * lineCount + fontSize * 0.2 * (lineCount - 1); // Add space between lines
-  const startY = (canvas.height - totalHeight) / 2;
-
   words.forEach((word, index) => {
-    const y = startY + index * fontSize * 1.2;
+    const y = index * lineHeight;
     ctx.strokeText(word, canvas.width / 2, y);
   });
 }
 
-// Reset the canvas and redraw
 function resetCanvas() {
-  resizeCanvas(); // handles clearing and redrawing
+  resizeCanvas();
   document.getElementById("feedback").textContent = "";
 }
 
-// Get drawing coordinates
+function scrollCanvas(direction) {
+  wrapper.scrollBy({ top: direction * 100, behavior: "smooth" });
+}
+
 function getCoords(e) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -80,21 +74,18 @@ function getCoords(e) {
   return [(clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY];
 }
 
-// Start drawing
 function startDraw(e) {
   e.preventDefault();
   isDrawing = true;
   [lastX, lastY] = getCoords(e);
 }
 
-// Stop drawing and check accuracy
 function stopDraw(e) {
   isDrawing = false;
   ctx.beginPath();
   checkAccuracy();
 }
 
-// Draw as user traces
 function draw(e) {
   e.preventDefault();
   if (!isDrawing) return;
@@ -112,7 +103,6 @@ function draw(e) {
   [lastX, lastY] = [x, y];
 }
 
-// Accuracy checking
 function checkAccuracy() {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
   let tracedPixels = 0;
@@ -140,7 +130,6 @@ function checkAccuracy() {
       : `Keep practicing! Accuracy: ${score}%`;
 }
 
-// Event listeners
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mouseup", stopDraw);
 canvas.addEventListener("mousemove", draw);
@@ -149,11 +138,9 @@ canvas.addEventListener("touchstart", startDraw);
 canvas.addEventListener("touchend", stopDraw);
 canvas.addEventListener("touchmove", draw);
 
-// Responsive canvas
 window.addEventListener("resize", resizeCanvas);
 
-// Make resetCanvas globally available
 window.resetCanvas = resetCanvas;
+window.scrollCanvas = scrollCanvas;
 
-// Initial setup
-resizeCanvas(); // sets size and draws phrase
+resizeCanvas();

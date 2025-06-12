@@ -1,58 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Letter Tracing Game</title>
-    <style>
-      body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Letter Tracing Game</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
 
-body {
-  font-family: sans-serif;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
+    #canvasWrapper {
+      height: 100vh;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
 
-canvas {
-  border: 2px solid #000;
-  touch-action: none;
-  display: block;
-  width: 90vw;
-  height: 70vh;
-  margin: 0 auto;
-}
+    canvas {
+      width: 100vw;
+      height: auto;
+      display: block;
+    }
 
-button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  font-size: 16px;
-}
+    .controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
+    }
 
-#feedback {
-  margin-top: 10px;
-  font-weight: bold;
-}
-    </style>
-  </head>
-  <body>
-    <h2>Trace the Letter</h2>
+    .controls button {
+      font-size: 20px;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
 
+    #feedback {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.9);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scrollable container for large canvas -->
+  <div id="canvasWrapper">
     <canvas id="tracingCanvas"></canvas>
+  </div>
 
-    <div>
-      <button onclick="resetCanvas()">Reset</button>
-    </div>
+  <!-- Always visible buttons -->
+  <div class="controls">
+    <button onclick="scrollCanvas(-1)">⬆️</button>
+    <button onclick="scrollCanvas(1)">⬇️</button>
+    <button onclick="resetCanvas()">🔁 Reset</button>
+  </div>
 
-    <div id="feedback"></div>
+  <!-- Accuracy feedback -->
+  <div id="feedback"></div>
 
-    <!-- Always include scripts at the end of body for best loading performance -->
-    <script src="tracing.js"></script>
-  </body>
+  <script src="tracing.js"></script>
+</body>
 </html>
