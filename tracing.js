@@ -34,22 +34,33 @@ function resizeCanvas() {
 }
 
 function drawPhrase() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const words = currentPhrase.split(" ");
-  const wordHeight = window.innerHeight * 0.9;
-  const fontSize = wordHeight * 0.6;
-
-  ctx.font = `bold ${fontSize}px Arial`;
-  ctx.strokeStyle = "lightgray";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-
-  words.forEach((word, index) => {
-    const y = index * wordHeight + wordHeight / 2;
-    ctx.strokeText(word, canvas.width / 2, y);
-  });
-}
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    const words = currentPhrase.split(" ");
+    const wordHeight = window.innerHeight * 0.9;
+  
+    words.forEach((word, index) => {
+      // Start with font size based on height
+      let fontSize = wordHeight * 0.6;
+      ctx.font = `bold ${fontSize}px Arial`;
+  
+      // Shrink font if too wide
+      let wordWidth = ctx.measureText(word).width;
+      const maxWidth = canvas.width * 0.9;
+      if (wordWidth > maxWidth) {
+        fontSize *= maxWidth / wordWidth;
+        ctx.font = `bold ${fontSize}px Arial`;
+      }
+  
+      ctx.strokeStyle = "lightgray";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+  
+      const y = index * wordHeight + wordHeight / 2;
+      ctx.strokeText(word, canvas.width / 2, y);
+    });
+  }
+  
 
 function resetCanvas() {
   resizeCanvas();
