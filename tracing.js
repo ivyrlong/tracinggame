@@ -21,9 +21,15 @@ let currentPhrase = phrases[new Date().getDate() % phrases.length];
 // Resize canvas to match visible area
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
+
+  // Set internal drawing size to match actual rendered size (important!)
   canvas.width = rect.width;
   canvas.height = rect.height;
-  drawPhrase();
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset any transforms (just in case)
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawPhrase(); // Redraw after resize
 }
 
 // Draw phrase on canvas
@@ -65,8 +71,7 @@ function drawPhrase() {
 
 // Reset the canvas and redraw
 function resetCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawPhrase();
+  resizeCanvas(); // handles clearing and redrawing
   document.getElementById("feedback").textContent = "";
 }
 
