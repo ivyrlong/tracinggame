@@ -1,5 +1,6 @@
-const canvas = document.getElementById('tracingCanvas');
-const ctx = canvas.getContext('2d');
+window.resetCanvas = resetCanvas;
+const canvas = document.getElementById("tracingCanvas");
+const ctx = canvas.getContext("2d");
 let isDrawing = false;
 let lastX, lastY;
 
@@ -21,13 +22,44 @@ let currentPhrase = phrases[new Date().getDate() % phrases.length];
 // Draw phrase on canvas
 function drawPhrase() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = 'bold 40px Arial';
-  ctx.strokeStyle = 'lightgray';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.strokeText(currentPhrase, canvas.width / 2, canvas.height / 2);
+
+  ctx.font = "bold 40px Arial";
+  ctx.strokeStyle = "lightgray";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+
+  const words = currentPhrase.split(" ");
+  const lines = [];
+  let currentLine = words[0];
+
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    const testLine = currentLine + " " + word;
+    const testWidth = ctx.measureText(testLine).width;
+
+    if (testWidth < canvas.width * 0.9) {
+      currentLine = testLine;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  lines.push(currentLine);
+
+  const lineHeight = 50;
+  const totalHeight = lines.length * lineHeight;
+  const startY = (canvas.height - totalHeight) / 2;
+
+  lines.forEach((line, index) => {
+    ctx.strokeText(line, canvas.width / 2, startY + index * lineHeight);
+  });
 }
-drawPhrase();
+//reset the canvas and draw the phrase
+function resetCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawPhrase();
+  document.getElementById("feedback").textContent = "";
+}
 
 // Get drawing coordinates
 function getCoords(e) {
@@ -60,9 +92,9 @@ function draw(e) {
   if (!isDrawing) return;
   const [x, y] = getCoords(e);
 
-  ctx.strokeStyle = '#000';
+  ctx.strokeStyle = "#000";
   ctx.lineWidth = 4;
-  ctx.lineCap = 'round';
+  ctx.lineCap = "round";
 
   ctx.beginPath();
   ctx.moveTo(lastX, lastY);
@@ -74,36 +106,37 @@ function draw(e) {
 
 // Accuracy checking logic
 function checkAccuracy() {
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    let tracedPixels = 0;
-    let correctPixels = 0;
-  
-    for (let i = 0; i < imageData.length; i += 4) {
-      const r = imageData[i];
-      const g = imageData[i + 1];
-      const b = imageData[i + 2];
-  
-      if (r === 0 && g === 0 && b === 0) {
-        tracedPixels++;
-        const baseGray = imageData[i - 4]; // crude guess
-        if (baseGray >= 180 && baseGray <= 200) {
-          correctPixels++;
-        }
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let tracedPixels = 0;
+  let correctPixels = 0;
+
+  for (let i = 0; i < imageData.length; i += 4) {
+    const r = imageData[i];
+    const g = imageData[i + 1];
+    const b = imageData[i + 2];
+
+    if (r === 0 && g === 0 && b === 0) {
+      tracedPixels++;
+      const baseGray = imageData[i - 4]; // crude guess
+      if (baseGray >= 180 && baseGray <= 200) {
+        correctPixels++;
       }
     }
-  
-    const score = tracedPixels === 0 ? 0 : Math.round((correctPixels / tracedPixels) * 100);
-    document.getElementById('feedback').textContent =
-      score >= 80
-        ? `Great job! Accuracy: ${score}% 🎉`
-        : `Keep practicing! Accuracy: ${score}%`;
   }
-  
-  // Event listeners
-  canvas.addEventListener('mousedown', startDraw);
-  canvas.addEventListener('mouseup', stopDraw);
-  canvas.addEventListener('mousemove', draw);
-  
-  canvas.addEventListener('touchstart', startDraw);
-  canvas.addEventListener('touchend', stopDraw);
-  canvas.addEventListener('touchmove', draw);
+
+  const score =
+    tracedPixels === 0 ? 0 : Math.round((correctPixels / tracedPixels) * 100);
+  document.getElementById("feedback").textContent =
+    score >= 80
+      ? `Great job! Accuracy: ${score}% 🎉`
+      : `Keep practicing! Accuracy: ${score}%`;
+}
+
+// Event listeners
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mouseup", stopDraw);
+canvas.addEventListener("mousemove", draw);
+
+canvas.addEventListener("touchstart", startDraw);
+canvas.addEventListener("touchend", stopDraw);
+canvas.addEventListener("touchmove", draw);
