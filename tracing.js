@@ -18,14 +18,17 @@ const phrases = [
 ];
 let currentPhrase = phrases[new Date().getDate() % phrases.length];
 
+// Dynamically resize canvas to allow one big word per screen
 function resizeCanvas() {
-  const visibleHeight = wrapper.clientHeight;
-  const words = currentPhrase.split(" ");
-  const lineHeight = visibleHeight / 6;
-  const estimatedHeight = words.length * lineHeight * 1.5;
+  const screenHeight = window.innerHeight;
+  const screenWidth = window.innerWidth;
 
-  canvas.width = wrapper.clientWidth;
-  canvas.height = estimatedHeight;
+  const words = currentPhrase.split(" ");
+  const wordHeight = screenHeight * 0.9; // Each word gets 90% of the screen
+  const canvasHeight = words.length * wordHeight;
+
+  canvas.width = screenWidth;
+  canvas.height = canvasHeight;
 
   drawPhrase();
 }
@@ -34,16 +37,16 @@ function drawPhrase() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const words = currentPhrase.split(" ");
-  const lineHeight = canvas.height / (words.length + 1);
-  const fontSize = lineHeight * 0.8;
+  const wordHeight = window.innerHeight * 0.9;
+  const fontSize = wordHeight * 0.6;
 
   ctx.font = `bold ${fontSize}px Arial`;
   ctx.strokeStyle = "lightgray";
   ctx.textAlign = "center";
-  ctx.textBaseline = "top";
+  ctx.textBaseline = "middle";
 
   words.forEach((word, index) => {
-    const y = index * lineHeight;
+    const y = index * wordHeight + wordHeight / 2;
     ctx.strokeText(word, canvas.width / 2, y);
   });
 }
@@ -54,7 +57,8 @@ function resetCanvas() {
 }
 
 function scrollCanvas(direction) {
-  wrapper.scrollBy({ top: direction * 100, behavior: "smooth" });
+  const scrollStep = window.innerHeight * 0.9;
+  wrapper.scrollBy({ top: direction * scrollStep, behavior: "smooth" });
 }
 
 function getCoords(e) {
