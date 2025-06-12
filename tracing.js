@@ -63,14 +63,26 @@ function resetCanvas() {
 
 // Get drawing coordinates
 function getCoords(e) {
-  const rect = canvas.getBoundingClientRect();
-  if (e.touches) {
-    const touch = e.touches[0];
-    return [touch.clientX - rect.left, touch.clientY - rect.top];
-  } else {
-    return [e.clientX - rect.left, e.clientY - rect.top];
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+  
+    let clientX, clientY;
+  
+    if (e.touches) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+  
+    return [
+      (clientX - rect.left) * scaleX,
+      (clientY - rect.top) * scaleY
+    ];
   }
-}
+  
 
 // Start drawing
 function startDraw(e) {
