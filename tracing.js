@@ -18,11 +18,20 @@ const phrases = [
 ];
 let currentPhrase = phrases[new Date().getDate() % phrases.length];
 
+// Resize canvas to match visible area
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  drawPhrase();
+}
+
 // Draw phrase on canvas
 function drawPhrase() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.font = "bold 40px Arial";
+  const fontSize = canvas.height / 10; // large and responsive
+  ctx.font = `bold ${fontSize}px Arial`;
   ctx.strokeStyle = "lightgray";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
@@ -45,7 +54,7 @@ function drawPhrase() {
   }
   lines.push(currentLine);
 
-  const lineHeight = 50;
+  const lineHeight = fontSize * 1.3;
   const totalHeight = lines.length * lineHeight;
   const startY = (canvas.height - totalHeight) / 2;
 
@@ -63,26 +72,21 @@ function resetCanvas() {
 
 // Get drawing coordinates
 function getCoords(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-  
-    let clientX, clientY;
-  
-    if (e.touches) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-  
-    return [
-      (clientX - rect.left) * scaleX,
-      (clientY - rect.top) * scaleY
-    ];
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  let clientX, clientY;
+  if (e.touches) {
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else {
+    clientX = e.clientX;
+    clientY = e.clientY;
   }
-  
+
+  return [(clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY];
+}
 
 // Start drawing
 function startDraw(e) {
@@ -153,8 +157,11 @@ canvas.addEventListener("touchstart", startDraw);
 canvas.addEventListener("touchend", stopDraw);
 canvas.addEventListener("touchmove", draw);
 
+// Responsive canvas
+window.addEventListener("resize", resizeCanvas);
+
 // Make resetCanvas globally available
 window.resetCanvas = resetCanvas;
 
-// 🔥 Draw phrase when the page first loads
-drawPhrase();
+// Initial setup
+resizeCanvas(); // sets size and draws phrase

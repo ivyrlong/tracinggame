@@ -5,37 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Letter Tracing Game</title>
     <style>
-      body {
-        font-family: sans-serif;
-        text-align: center;
-        margin: 0;
-        padding: 20px;
-      }
+      body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
 
-      canvas {
-        border: 2px solid #000;
-        touch-action: none;
-        display: block;
-        margin: 0 auto;
-        max-width: 100%;
-      }
+body {
+  font-family: sans-serif;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
 
-      button {
-        margin-top: 15px;
-        padding: 10px 20px;
-        font-size: 16px;
-      }
+canvas {
+  border: 2px solid #000;
+  touch-action: none;
+  display: block;
+  width: 90vw;
+  height: 70vh;
+  margin: 0 auto;
+}
 
-      #feedback {
-        margin-top: 10px;
-        font-weight: bold;
-      }
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+#feedback {
+  margin-top: 10px;
+  font-weight: bold;
+}
     </style>
   </head>
   <body>
     <h2>Trace the Letter</h2>
 
-    <canvas id="tracingCanvas" width="600" height="400"></canvas>
+    <canvas id="tracingCanvas"></canvas>
 
     <div>
       <button onclick="resetCanvas()">Reset</button>
