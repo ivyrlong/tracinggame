@@ -1,4 +1,3 @@
-window.resetCanvas = resetCanvas;
 const canvas = document.getElementById("tracingCanvas");
 const ctx = canvas.getContext("2d");
 let isDrawing = false;
@@ -54,7 +53,8 @@ function drawPhrase() {
     ctx.strokeText(line, canvas.width / 2, startY + index * lineHeight);
   });
 }
-//reset the canvas and draw the phrase
+
+// Reset the canvas and redraw
 function resetCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawPhrase();
@@ -74,24 +74,24 @@ function getCoords(e) {
 
 // Start drawing
 function startDraw(e) {
-  e.preventDefault(); // Prevent scrolling on touch
+  e.preventDefault();
   isDrawing = true;
   [lastX, lastY] = getCoords(e);
 }
 
-// Stop drawing + check accuracy
+// Stop drawing and check accuracy
 function stopDraw(e) {
   isDrawing = false;
   ctx.beginPath();
   checkAccuracy();
 }
 
-// Draw the user's trace
+// Draw as user traces
 function draw(e) {
-  e.preventDefault(); // Prevent scrolling on touch
+  e.preventDefault();
   if (!isDrawing) return;
-  const [x, y] = getCoords(e);
 
+  const [x, y] = getCoords(e);
   ctx.strokeStyle = "#000";
   ctx.lineWidth = 4;
   ctx.lineCap = "round";
@@ -104,7 +104,7 @@ function draw(e) {
   [lastX, lastY] = [x, y];
 }
 
-// Accuracy checking logic
+// Accuracy checking
 function checkAccuracy() {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
   let tracedPixels = 0;
@@ -117,7 +117,7 @@ function checkAccuracy() {
 
     if (r === 0 && g === 0 && b === 0) {
       tracedPixels++;
-      const baseGray = imageData[i - 4]; // crude guess
+      const baseGray = imageData[i - 4];
       if (baseGray >= 180 && baseGray <= 200) {
         correctPixels++;
       }
@@ -140,3 +140,9 @@ canvas.addEventListener("mousemove", draw);
 canvas.addEventListener("touchstart", startDraw);
 canvas.addEventListener("touchend", stopDraw);
 canvas.addEventListener("touchmove", draw);
+
+// Make resetCanvas globally available
+window.resetCanvas = resetCanvas;
+
+// 🔥 Draw phrase when the page first loads
+drawPhrase();
